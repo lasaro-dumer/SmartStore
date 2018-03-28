@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SmartStore.Api.Client\SmartStore.Api.Client.csproj" />
     <ProjectReference Include="..\SmartStore.Domain\SmartStore.Domain.csproj" />
   </ItemGroup>
 

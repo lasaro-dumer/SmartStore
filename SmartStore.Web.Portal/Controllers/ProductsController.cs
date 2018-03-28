@@ -1,27 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using SmartStore.Domain.Interfaces.Repositories;
 using SmartStore.Domain.Models;
-using SmartStore.Web.Portal.Clients;
 
 namespace SmartStore.Web.Portal.Controllers
 {
     public class ProductsController : Controller
     {
-        public ProductsClient ProductsClient { get; }
+        private IProductsRepository _productsRepo { get; }
 
-        public ProductsController(ProductsClient productsClient)
+        public ProductsController(IProductsRepository productsRepo)
         {
-            ProductsClient = productsClient;
+            _productsRepo = productsRepo;
         }
 
         public IActionResult Index()
         {
             List<ProductModel> products = new List<ProductModel>();
 
-            products = ProductsClient.GetProducts();
+            products = _productsRepo.GetProducts();
 
             return View(products);
         }

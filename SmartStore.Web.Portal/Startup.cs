@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SmartStore.Web.Portal.Clients;
+using SmartStore.Api.Client;
+using SmartStore.Domain.Interfaces.Repositories;
 
 namespace SmartStore.Web.Portal
 {
@@ -18,7 +19,7 @@ namespace SmartStore.Web.Portal
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ProductsClient>();
+            services.AddScoped<IProductsRepository, ProductsRepository>();
             services.AddMvc();
         }
 

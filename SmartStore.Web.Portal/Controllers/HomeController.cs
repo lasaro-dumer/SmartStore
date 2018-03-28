@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using SmartStore.Domain.Models;
-using SmartStore.Web.Portal.Clients;
 using SmartStore.Web.Portal.Models;
 
 namespace SmartStore.Web.Portal.Controllers
