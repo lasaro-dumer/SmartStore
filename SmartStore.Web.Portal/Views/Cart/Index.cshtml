@@ -1,0 +1,32 @@
+﻿<div class="row">
+    <div class="col">
+        <div class="row">
+            <h3>Your current cart</h3>
+        </div>
+        @for (int i = 0; i < 5; i++)
+        {
+            <div class="row">
+                <div class="col">
+                    Product Name
+                </div>
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-outline-secondary" type="button"><span class="oi oi-minus"></span></button>
+                        </div>
+                        <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button"><span class="oi oi-plus"></span></button>
+                            <button class="btn btn-outline-secondary" type="button"><span class="oi oi-trash"></span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="row">
+            <button class="btn btn-success">Check out</button>
+        </div>
+    </div>
+</div>
+
+

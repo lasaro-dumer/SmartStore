@@ -1,5 +1,3 @@
-using System;
-
 namespace SmartStore.Web.Portal.Models
 {
     public class ErrorViewModel

@@ -1,24 +1,73 @@
 ﻿@model List<ProductModel>
 @{
     ViewData["Title"] = "Products Page";
+    ViewData["ActiveMenu"] = "navProducts";
 }
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Description</th>
-            <th scope="col">Price</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (ProductModel product in Model)
-        {
-
-            <tr>
-                <td>@product.Name</td>
-                <td>@product.Description</td>
-                <td>@product.SellingPrice</td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="row">
+    <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12 image-main-section">
+            <div class="row img-part">
+                <div class="col-md-12 col-sm-12 colxs-12 img-section">
+                    <img src="https://dummyimage.com/200x150/000/ebecf5.png&text=++++image+++">
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12 image-title">
+                    <h3>Image Title</h3>
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12 image-description">
+                    <p>Lorem ipsum dolor sed do eiusmod tempor incididunt ut labore et ...</p>
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <a href="#" class="btn btn-success add-cart-btn">ADD TO CART</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12 image-main-section">
+            <div class="row img-part">
+                <div class="col-md-12 col-sm-12 colxs-12 img-section">
+                    <img src="https://dummyimage.com/200x150/000/ebecf5.png&text=++++image+++">
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12 image-title">
+                    <h3>Image Title</h3>
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12 image-description">
+                    <p>Lorem ipsum dolor sed do eiusmod tempor incididunt ut labore et ...</p>
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <a href="#" class="btn btn-success add-cart-btn">ADD TO CART</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12 image-main-section">
+            <div class="row img-part">
+                <div class="col-md-12 col-sm-12 colxs-12 img-section">
+                    <img src="https://dummyimage.com/200x150/000/ebecf5.png&text=++++image+++">
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12 image-title">
+                    <h3>Image Title</h3>
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12 image-description">
+                    <p>Lorem ipsum dolor sed do eiusmod tempor incididunt ut labore et ...</p>
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <a href="#" class="btn btn-success add-cart-btn">ADD TO CART</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12 image-main-section">
+            <div class="row img-part">
+                <div class="col-md-12 col-sm-12 colxs-12 img-section">
+                    <img src="https://dummyimage.com/200x150/000/ebecf5.png&text=++++image+++">
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12 image-title">
+                    <h3>Image Title</h3>
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12 image-description">
+                    <p>Lorem ipsum dolor sed do eiusmod tempor incididunt ut labore et ...</p>
+                </div>
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <a href="#" class="btn btn-success add-cart-btn">ADD TO CART</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

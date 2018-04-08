@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Products Page";
+    ViewData["ActiveMenu"] = "navStock";
+}
+
+<canvas id="myChart" width="400" height="400"></canvas>
+
+@section Scripts {
+    <script>
+        var ctx = document.getElementById("myChart").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: ["January", "February", "March", "April", "May", "June", "July"],
+                datasets: [
+                    {
+                        label: "Standard Mouse",
+                        data: [25, 19, 30, 31, 16, 15, 20],
+                        fill: false,
+                        borderColor: "rgb(75, 192, 192)",
+                        lineTension: 0.1
+                    },
+                    {
+                        label: "Standard Keyboard",
+                        data: [0, 15, 20, 12, 5, 15, 10],
+                        fill: false,
+                        borderColor: "rgb(75, 75, 192)",
+                        lineTension: 0.1
+                    },
+                    {
+                        label: "Standard Monitor",
+                        data: [10, 5, 2, 12, 15, 20, 10],
+                        fill: false,
+                        borderColor: "rgb(80, 80, 50)",
+                        lineTension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: false
+            }
+        });
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
