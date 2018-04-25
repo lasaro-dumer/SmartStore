@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SmartStore.Domain.Models
+namespace SmartStore.Data.Models
 {
     public class ProductModel
     {

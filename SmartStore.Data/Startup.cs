@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using SmartStore.Data.Entities;
 
 namespace SmartStore.Data
 {
@@ -11,7 +13,8 @@ namespace SmartStore.Data
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<SmartStoreDbContext>();
+            services.AddDbContext<SmartStoreDbContext>(ServiceLifetime.Scoped)
+                    .AddIdentity<UserEntity, IdentityRole>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

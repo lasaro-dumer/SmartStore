@@ -5,13 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="wwwroot\lib\**" />
-    <Content Remove="wwwroot\lib\**" />
-    <EmbeddedResource Remove="wwwroot\lib\**" />
-    <None Remove="wwwroot\lib\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Remove="package-lock.json" />
   </ItemGroup>
 
@@ -25,12 +18,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SmartStore.Api.Client\SmartStore.Api.Client.csproj" />
-    <ProjectReference Include="..\SmartStore.Domain\SmartStore.Domain.csproj" />
+    <None Include="wwwroot\lib\js\bootstrap.min.js" />
+    <None Include="wwwroot\lib\js\Chart.min.js" />
+    <None Include="wwwroot\lib\js\jquery.min.js" />
+    <None Include="wwwroot\lib\js\jquery.validate.min.js" />
+    <None Include="wwwroot\lib\js\jquery.validate.unobtrusive.min.js" />
+    <None Include="wwwroot\lib\js\popper.min.js" />
   </ItemGroup>
-  
+
+  <ItemGroup>
+    <ProjectReference Include="..\SmartStore.Data\SmartStore.Data.csproj" />
+  </ItemGroup>
+
   <Target Name="RunGulp" BeforeTargets="Build">
     <Exec Command="node_modules\.bin\gulp.cmd" />
   </Target>
-  
+
 </Project>

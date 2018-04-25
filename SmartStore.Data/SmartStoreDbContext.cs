@@ -1,25 +1,42 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using SmartStore.Data.Entities;
 
 namespace SmartStore.Data
 {
-    public class SmartStoreDbContext : DbContext
+    public class SmartStoreDbContext : IdentityDbContext<UserEntity>
     {
         private readonly IConfiguration _config;
+        private readonly IHostingEnvironment _env;
+        public string ConnectionString { get; }
+        public DbSet<Product> Products { get; set; }
 
-        public SmartStoreDbContext(DbContextOptions options, IConfiguration configuration)
+        public SmartStoreDbContext(DbContextOptions options, IConfiguration configuration, IHostingEnvironment env)
          : base(options)
         {
             _config = configuration;
-        }
+            _env = env;
 
-        public DbSet<Product> Products { get; set; }
+            if (_env.IsDevelopment())
+            {
+                ConnectionString = _config["ConnectionStrings:DefaultConnection"];
+            }
+            else
+            {
+                ConnectionString = _config["ENV_DBCONN"];
+            }
+
+            if (string.IsNullOrEmpty(ConnectionString))
+                throw new Exception($"Connection string not configured for environment {_env.EnvironmentName}");
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
+
             modelBuilder.Entity<Product>()
               .Property(p => p.RowVersion)
               .ValueGeneratedOnAddOrUpdate()
@@ -30,7 +47,7 @@ namespace SmartStore.Data
         {
             base.OnConfiguring(optionsBuilder);
 
-            optionsBuilder.UseSqlServer(_config["ConnectionStrings:DefaultConnection"]);
+            optionsBuilder.UseSqlServer(ConnectionString);
         }
     }
 }

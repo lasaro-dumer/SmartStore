@@ -1,23 +1,32 @@
-﻿@model ProductModel
+﻿@model UserDetails
 
 <div>
-    <h4>User account details</h4>
+    <h4>UserDetails</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            Name
+            @Html.DisplayNameFor(model => model.Email)
         </dt>
         <dd>
-            John Doe
+            @Html.DisplayFor(model => model.Email)
         </dd>
         <dt>
-            Email
+            @Html.DisplayNameFor(model => model.FirstName)
         </dt>
         <dd>
-            johndoe@domain.com
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LastName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UserName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UserName)
         </dd>
     </dl>
-</div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ })
 </div>

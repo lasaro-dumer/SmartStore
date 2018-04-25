@@ -16,12 +16,13 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         @{
-            bool isClient = false;
-            bool isAdministrator = !isClient;
+            bool isClient = User.Identity.IsAuthenticated && User.IsInRole("Client");
+            bool isAdministrator = User.Identity.IsAuthenticated && User.IsInRole("Admin");
+            bool isSuperUser = User.Identity.IsAuthenticated && User.HasClaim("SuperUser", "true");
         }
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                @if (isClient)
+                @if (!isAdministrator)
                 {
                     <li class="nav-item">
                         <a id="navProducts" asp-area="" asp-controller="Products" asp-action="Index" class="nav-link">Products</a>
@@ -41,16 +42,31 @@
                 }
             </ul>
             <div>
-                @if (isClient)
+                @if (User.Identity.IsAuthenticated)
                 {
-                    <a asp-area="" asp-controller="Cart" asp-action="Index">
-                        <span class="oi oi-cart"></span>
+                    @if (isClient)
+                    {
+                        <a asp-area="" asp-controller="Cart" asp-action="Index" class="btn btn-sm btn-danger">
+                            <span class="oi oi-cart" title="Cart"></span>
+                        </a>
+                    }
+                    @User.Identity.Name;
+                    <a asp-area="" asp-controller="Account" asp-action="Details" class="btn btn-sm btn-info">
+                        <span class="oi oi-person" title="Account Details"></span>
+                    </a>
+                    <a asp-area="" asp-controller="Account" asp-action="Logout" class="btn btn-sm btn-danger">
+                        Logout<span class="oi oi-account-logout" title="Logout"></span>
                     </a>
                 }
-                John Doe
-                <a asp-area="" asp-controller="Account" asp-action="Details">
-                    <span class="oi oi-person" title="person"></span>
-                </a>
+                else
+                {
+                    <a asp-area="" asp-controller="Account" asp-action="Register" class="btn btn-sm btn-primary">
+                        Register
+                    </a>
+                    <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-sm btn-primary">
+                        Login<span class="oi oi-account-login" title="Login"></span>
+                    </a>
+                }
             </div>
         </div>
     </nav>

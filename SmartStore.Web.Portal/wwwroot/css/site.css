@@ -1,3 +1,7 @@
 ﻿.nav-item.active > a{
     font-weight: bold;
 }
+
+.oi {
+    margin: 2px;
+}
