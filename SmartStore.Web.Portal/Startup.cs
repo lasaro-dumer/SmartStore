@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartStore.Data;
 using SmartStore.Data.Entities;
+using SmartStore.Web.Portal.Helpers;
 
 namespace SmartStore.Web.Portal
 {
@@ -44,6 +46,8 @@ namespace SmartStore.Web.Portal
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            app.UseMiddleware<SerilogMiddleware>();
 
             app.UseStaticFiles();
 

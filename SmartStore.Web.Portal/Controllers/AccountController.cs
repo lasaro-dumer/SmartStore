@@ -3,9 +3,11 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using SmartStore.Data.Entities;
 using SmartStore.Data.Models;
 using SmartStore.Data.Repositories.Interfaces;
+using SmartStore.Web.Portal.Helpers;
 using SmartStore.Web.Portal.Models;
 
 namespace SmartStore.Web.Portal.Controllers
@@ -16,16 +18,19 @@ namespace SmartStore.Web.Portal.Controllers
         private UserManager<UserEntity> _userMgr;
         private IUsersRepository _usersRepo;
         private IMapper _mapper;
+        private ILogger<AccountController> _logger;
 
         public AccountController(SignInManager<UserEntity> signInMgr,
             UserManager<UserEntity> userMgr,
             IUsersRepository usersRepo,
-            IMapper mapper)
+            IMapper mapper,
+            ILogger<AccountController> logger)
         {
             _signInMgr = signInMgr;
             _userMgr = userMgr;
             _usersRepo = usersRepo;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet, Authorize]
@@ -57,10 +62,14 @@ namespace SmartStore.Web.Portal.Controllers
                         return Redirect(credential.ReturnUrl);
                     return RedirectToAction("Index", "Home");
                 }
+                else
+                {
+                    this.AddErrorMessage("Failed to Login");
+                }
             }
             catch (Exception ex)
             {
-                //_logger.LogError($"Exception thrown while logging in: {ex}");
+                _logger.LogError($"Exception thrown while logging in: {ex}");
             }
 
             return View();// BadRequest("Failed to login");
@@ -86,7 +95,7 @@ namespace SmartStore.Web.Portal.Controllers
             if (ModelState.IsValid)
             {
                 UserEntity userEntity = _mapper.Map<UserEntity>(user);
-                //validate password working
+
                 IdentityResult result = await _userMgr.CreateAsync(userEntity, user.Password);
                 if (result.Succeeded)
                 {

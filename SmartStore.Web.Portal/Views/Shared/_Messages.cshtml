@@ -1,0 +1,41 @@
+﻿@if (TempData[TempDataHelper.INFORMATION_MESSAGES] != null)
+{
+    var infoMessages = (List<string>)TempData[TempDataHelper.INFORMATION_MESSAGES];
+    foreach (string message in infoMessages)
+    {
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            @message
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+}
+
+@if (TempData[TempDataHelper.WARNING_MESSAGES] != null)
+{
+    var warningMessages = (List<string>)TempData[TempDataHelper.WARNING_MESSAGES];
+    foreach (string message in warningMessages)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            @message
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+}
+
+@if (TempData[TempDataHelper.ERROR_MESSAGES] != null)
+{
+    var errorMessages = (List<string>)TempData[TempDataHelper.ERROR_MESSAGES];
+    foreach (string message in errorMessages)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @message
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+}
