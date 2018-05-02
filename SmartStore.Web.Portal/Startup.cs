@@ -2,12 +2,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartStore.Data;
 using SmartStore.Data.Entities;
-using SmartStore.Web.Portal.Helpers;
+using SmartStore.Web.Portal.Utility;
 
 namespace SmartStore.Web.Portal
 {
@@ -25,6 +24,8 @@ namespace SmartStore.Web.Portal
         {
             services.AddSmartStoreData();
             services.AddAutoMapper();
+
+            services.AddSingleton<EmailSender>();
 
             services.AddIdentity<UserEntity, IdentityRole>()
                 .AddEntityFrameworkStores<SmartStoreDbContext>();
@@ -53,12 +54,7 @@ namespace SmartStore.Web.Portal
 
             app.UseAuthentication();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseMvcWithDefaultRoute();
 
             identityInitializer.Seed().Wait();
         }

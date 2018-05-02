@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Serilog;
 using Serilog.Events;
 
-namespace SmartStore.Web.Portal.Helpers
+namespace SmartStore.Web.Portal.Utility
 {
     public class SerilogMiddleware
     {

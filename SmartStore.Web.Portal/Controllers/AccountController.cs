@@ -7,30 +7,34 @@ using Microsoft.Extensions.Logging;
 using SmartStore.Data.Entities;
 using SmartStore.Data.Models;
 using SmartStore.Data.Repositories.Interfaces;
-using SmartStore.Web.Portal.Helpers;
+using SmartStore.Web.Portal.Utility;
 using SmartStore.Web.Portal.Models;
+using System.Threading.Tasks;
 
 namespace SmartStore.Web.Portal.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         private SignInManager<UserEntity> _signInMgr;
         private UserManager<UserEntity> _userMgr;
         private IUsersRepository _usersRepo;
         private IMapper _mapper;
         private ILogger<AccountController> _logger;
+        private readonly EmailSender _emailSender;
 
         public AccountController(SignInManager<UserEntity> signInMgr,
             UserManager<UserEntity> userMgr,
             IUsersRepository usersRepo,
             IMapper mapper,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+            EmailSender emailSender)
         {
             _signInMgr = signInMgr;
             _userMgr = userMgr;
             _usersRepo = usersRepo;
             _mapper = mapper;
             _logger = logger;
+            _emailSender = emailSender;
         }
 
         [HttpGet, Authorize]
@@ -69,7 +73,7 @@ namespace SmartStore.Web.Portal.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Exception thrown while logging in: {ex}");
+                _logger.LogError(ex, $"Exception thrown while logging in: {ex}");
             }
 
             return View();// BadRequest("Failed to login");
@@ -94,11 +98,19 @@ namespace SmartStore.Web.Portal.Controllers
         {
             if (ModelState.IsValid)
             {
-                UserEntity userEntity = _mapper.Map<UserEntity>(user);
+                UserEntity ue = _mapper.Map<UserEntity>(user);
 
-                IdentityResult result = await _userMgr.CreateAsync(userEntity, user.Password);
+                ue.EmailConfirmed = false;
+                ue.EmailConfirmationToken = Guid.NewGuid().ToString();
+                ue.EmailConfirmationExpiration = DateTime.Now.AddHours(24);
+
+                IdentityResult result = await _userMgr.CreateAsync(ue, user.Password);
                 if (result.Succeeded)
                 {
+                    await _emailSender.SendRegisterConfirmationEmailAsync(ue.Email,
+                                                                          ue.FirstName,
+                                                                          ue.LastName,
+                                                                          ue.EmailConfirmationToken);
                     return RedirectToAction("Login");
                 }
                 else
@@ -110,6 +122,30 @@ namespace SmartStore.Web.Portal.Controllers
                 }
             }
             return View();
+        }
+
+        [HttpGet("[controller]/[action]/{token}", Name = "ConfirmEmail")]
+        public IActionResult ConfirmEmail(string token)
+        {
+            UserEntity ue = _usersRepo.GetUserByConfirmationToken(token);
+            bool emailConfirmed = false;
+            if (ue != null)
+            {
+                if (ue.EmailConfirmationExpiration > DateTime.Now)
+                {
+                    ue.EmailConfirmed = true;
+                    ue.EmailConfirmationToken = null;
+                    _usersRepo.SaveAllAsync();
+                    emailConfirmed = ue.EmailConfirmed;
+                }
+            }
+
+            if (emailConfirmed)
+                this.AddInformationMessage("Email confirmed!");
+            else
+                this.AddErrorMessage("Invalid confirmation token");
+
+            return RedirectToAction("Login");
         }
     }
 }

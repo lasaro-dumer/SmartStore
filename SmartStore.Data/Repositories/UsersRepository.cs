@@ -16,5 +16,12 @@ namespace SmartStore.Data.Repositories
 
             return user;
         }
+
+        public UserEntity GetUserByConfirmationToken(string token)
+        {
+            var user = _context.Users.Where(u => u.EmailConfirmationToken == token).FirstOrDefault();
+
+            return user;
+        }
     }
 }
