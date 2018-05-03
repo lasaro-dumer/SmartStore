@@ -36,4 +36,9 @@ gulp.task('build-vendor-fonts', () => {
 
 gulp.task('build-vendor', gulp.series(['build-vendor-css', 'build-vendor-js', 'build-vendor-fonts']));
 
-gulp.task('default', gulp.series(['build-vendor']));
+gulp.task('email-templates', () => {
+    return gulp.src(['EmailTemplates/**/*'])
+        .pipe(gulp.dest('wwwroot/EmailTemplates'));
+});
+
+gulp.task('default', gulp.series(['build-vendor', 'email-templates']));

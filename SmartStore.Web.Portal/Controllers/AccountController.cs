@@ -107,10 +107,15 @@ namespace SmartStore.Web.Portal.Controllers
                 IdentityResult result = await _userMgr.CreateAsync(ue, user.Password);
                 if (result.Succeeded)
                 {
-                    await _emailSender.SendRegisterConfirmationEmailAsync(ue.Email,
-                                                                          ue.FirstName,
-                                                                          ue.LastName,
-                                                                          ue.EmailConfirmationToken);
+                    bool emailSent = await _emailSender.SendRegisterConfirmationEmailAsync(ue.Email,
+                                                                                          ue.FirstName,
+                                                                                          ue.LastName,
+                                                                                          ue.EmailConfirmationToken);
+                    if (emailSent)
+                        this.AddInformationMessage("Confirmation email sent");
+                    else
+                        this.AddWarningMessage("Failed to send confirmation email.");
+
                     return RedirectToAction("Login");
                 }
                 else
@@ -124,26 +129,75 @@ namespace SmartStore.Web.Portal.Controllers
             return View();
         }
 
-        [HttpGet("[controller]/[action]/{token}", Name = "ConfirmEmail")]
-        public IActionResult ConfirmEmail(string token)
+        [HttpPost, Authorize]
+        public async Task<IActionResult> ResendConfirmationEmail()
         {
-            UserEntity ue = _usersRepo.GetUserByConfirmationToken(token);
-            bool emailConfirmed = false;
-            if (ue != null)
+            try
             {
-                if (ue.EmailConfirmationExpiration > DateTime.Now)
-                {
-                    ue.EmailConfirmed = true;
-                    ue.EmailConfirmationToken = null;
-                    _usersRepo.SaveAllAsync();
-                    emailConfirmed = ue.EmailConfirmed;
-                }
-            }
+                UserEntity ue = _usersRepo.GetUserByUsername(User.Identity.Name);
 
-            if (emailConfirmed)
-                this.AddInformationMessage("Email confirmed!");
-            else
-                this.AddErrorMessage("Invalid confirmation token");
+                ue.EmailConfirmed = false;
+                ue.EmailConfirmationToken = Guid.NewGuid().ToString();
+                ue.EmailConfirmationExpiration = DateTime.Now.AddHours(24);
+
+                await _usersRepo.SaveAllAsync();
+
+                bool emailSent = await _emailSender.SendRegisterConfirmationEmailAsync(ue.Email,
+                                                                                      ue.FirstName,
+                                                                                      ue.LastName,
+                                                                                      ue.EmailConfirmationToken);
+
+                if (emailSent)
+                    this.AddInformationMessage("Confirmation email sent");
+                else
+                    this.AddWarningMessage("Failed to send confirmation email.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+            }
+            return View("Details");
+        }
+
+        [HttpGet("[controller]/[action]/{token}", Name = "ConfirmEmail")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string token)
+        {
+            try
+            {
+                UserEntity ue = _usersRepo.GetUserByConfirmationToken(token);
+                if (User.Identity.IsAuthenticated && User.Identity.Name != ue.UserName)
+                {
+                    this.AddErrorMessage("You can't confirm a email that isn't yours when you are loged in!");
+                    return RedirectToAction("Index", "Home");
+                }
+
+                bool emailConfirmed = false;
+
+                if (ue != null)
+                {
+                    if (ue.EmailConfirmationExpiration > DateTime.Now)
+                    {
+                        ue.EmailConfirmed = true;
+                        ue.EmailConfirmationToken = null;
+                        await _usersRepo.SaveAllAsync();
+                        emailConfirmed = ue.EmailConfirmed;
+                    }
+                }
+
+                if (emailConfirmed)
+                {
+                    this.AddInformationMessage("Email confirmed!");
+                    if (User.Identity.IsAuthenticated)
+                        return RedirectToAction("Index", "Home");
+                }
+                else
+                    this.AddErrorMessage("Invalid confirmation token");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+            }
 
             return RedirectToAction("Login");
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -23,21 +24,24 @@ namespace SmartStore.Web.Portal.Utility
         private string _fromName;
         private string _fromEmail;
 
-        public EmailSender(IConfiguration configuration, ILogger<EmailSender> logger, IHttpContextAccessor httpContextAccessor)
+        public EmailSender(IConfiguration configuration,
+            ILogger<EmailSender> logger,
+            IHttpContextAccessor httpContextAccessor,
+            IHostingEnvironment hostEnvironment)
         {
             _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
             _logger = logger;
             _client = new SendGridClient(_configuration["SENDGRID_API_KEY"]);
 
-            if (_configuration["Email"] == null)
+            if (_configuration.GetSection("Email") == null)
                 throw new Exception("Configuration for Email not found");
 
             _maxEmailAttempts = Convert.ToInt32(_configuration["Email:MaxAttempts"] ?? "3");
             _fromEmail = _configuration["Email:FromEmail"];
             _fromName = _configuration["Email:FromName"];
 
-            string templatePath = $@"{Directory.GetCurrentDirectory()}\EmailTemplates";
+            string templatePath = $@"{hostEnvironment.WebRootPath}\EmailTemplates";
             _engine = new RazorLightEngineBuilder()
                           .UseFilesystemProject(templatePath)
                           .UseMemoryCachingProvider()

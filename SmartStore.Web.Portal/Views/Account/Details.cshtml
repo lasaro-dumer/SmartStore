@@ -33,6 +33,12 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.EmailConfirmed)
+            @if (!Model.EmailConfirmed)
+            {
+                <form asp-action="ResendConfirmationEmail">
+                    <button type="submit" class="btn btn-primary btn-sm" style="display:inline-block">Resend Confirmation email</button>
+                </form>
+            }
         </dd>
     </dl>
 </div>
