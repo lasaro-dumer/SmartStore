@@ -1,45 +1,69 @@
-﻿@{
+﻿@model StockSearchFilter
+
+@{
     ViewData["Title"] = "Products Page";
     ViewData["ActiveMenu"] = "navStock";
 }
 
-<canvas id="myChart" width="400" height="400"></canvas>
+<script type="text/javascript">
+    var processing = false;
 
-@section Scripts {
-    <script>
-        var ctx = document.getElementById("myChart").getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: ["January", "February", "March", "April", "May", "June", "July"],
-                datasets: [
-                    {
-                        label: "Standard Mouse",
-                        data: [25, 19, 30, 31, 16, 15, 20],
-                        fill: false,
-                        borderColor: "rgb(75, 192, 192)",
-                        lineTension: 0.1
+    $(document).ready(function () {
+        $('form.search-product input').on('input', function () {
+            if (!processing) {
+                $.ajax({
+                    type: "POST",
+                    url: '/Stock/Search',
+                    data: JSON.stringify(objectifyForm($('form.search-product'))),
+                    contentType: "application/json",
+                    accepts: 'text/html',
+                    beforeSend: function () {
+                        processing = true;
+                        $("#Results").html('<div class="loader mx-auto"></div>');
                     },
-                    {
-                        label: "Standard Keyboard",
-                        data: [0, 15, 20, 12, 5, 15, 10],
-                        fill: false,
-                        borderColor: "rgb(75, 75, 192)",
-                        lineTension: 0.1
+                    error: function (context) {
+                        $("#Results").html(context);
                     },
-                    {
-                        label: "Standard Monitor",
-                        data: [10, 5, 2, 12, 15, 20, 10],
-                        fill: false,
-                        borderColor: "rgb(80, 80, 50)",
-                        lineTension: 0.1
+                    success: function (context) {
+                        $("#Results").html(context);
+                    },
+                    complete: function () {
+                        processing = false;
                     }
-                ]
-            },
-            options: {
-                responsive: false
+                });
             }
         });
-    </script>
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    });
+
+</script>
+
+
+<div class="row m-1 p-1">
+    <form asp-action="Search" method="post" class="form-inline search-product">
+        <div class="col p-0">
+            <input asp-for="Name" class="form-control form-control-sm" placeholder="Name" />
+        </div>
+        <div class="col p-0">
+            <input asp-for="Description" class="form-control form-control-sm" placeholder="Description" />
+        </div>
+        <div class="col p-0">
+            <input asp-for="MinSellingPrice" class="form-control form-control-sm" placeholder="Minimum selling price" />
+        </div>
+        <div class="col p-0">
+            <input asp-for="MaxSellingPrice" class="form-control form-control-sm" placeholder="Maximun selling price" />
+        </div>
+        <div class="col p-0">
+            <input asp-for="MinStock" class="form-control form-control-sm" placeholder="Minimum stock" />
+        </div>
+        <div class="col p-0">
+            <input asp-for="MaxStock" class="form-control form-control-sm" placeholder="Maximun stock" />
+        </div>
+    </form>
+</div>
+<div class="row m-1 p-1">
+    <div class="col">
+        <div id="Results"></div>
+    </div>
+</div>
+
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

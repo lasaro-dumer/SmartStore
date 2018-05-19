@@ -8,7 +8,7 @@ namespace SmartStore.Data
     {
         public MappingProfile()
         {
-            CreateMap<Product, ProductModel>();
+            CreateMap<Product, ProductModel>().ReverseMap();
             CreateMap<UserEntity, UserDetails>();
         }
     }

@@ -11,7 +11,8 @@ const vendorScripts = [
     "node_modules/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
     "node_modules/popper.js/dist/umd/popper.min.js",
     "node_modules/bootstrap/dist/js/bootstrap.min.js",
-    "node_modules/chart.js/dist/Chart.min.js"
+    "node_modules/chart.js/dist/Chart.min.js",
+    "node_modules/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"
 ];
 const vendorFonts = [
     "node_modules/open-iconic/font/fonts/open-iconic.woff",

@@ -10,6 +10,7 @@ namespace SmartStore.Data.Models
         [Required]
         [MaxLength(100)]
         public string Description { get; set; }
+        [Display(Name = "Selling Price")]
         public decimal SellingPrice { get; set; }
     }
 }
