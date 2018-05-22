@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using SmartStore.Data.Entities;
 
-namespace SmartStore.Data
+namespace SmartStore.Data.Initializers
 {
     public class SmartStoreIdentityInitializer
     {

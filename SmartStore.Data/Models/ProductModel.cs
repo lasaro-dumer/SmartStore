@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SmartStore.Data.Models
 {
@@ -12,5 +13,9 @@ namespace SmartStore.Data.Models
         public string Description { get; set; }
         [Display(Name = "Selling Price")]
         public decimal SellingPrice { get; set; }
+        [Display(Name = "Stock Balance")]
+        public int StockBalance { get; set; }
+        [Display(Name = "Last Stock Movement Date")]
+        public DateTime LastStockMovementDate { get; set; }
     }
 }

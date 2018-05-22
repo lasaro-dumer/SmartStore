@@ -63,14 +63,14 @@ namespace SmartStore.Web.Portal.Controllers
         [HttpPost, Authorize]
         public IActionResult Search([FromBody]StockSearchFilter filter)
         {
-            IEnumerable<Product> prodList = null;
+            IEnumerable<StockMovement> prodList = null;
 
             prodList = _productsRepo.GetProductsWithStock(filter.Name,
                                                           filter.Description,
                                                           filter.MinSellingPrice,
                                                           filter.MaxSellingPrice,
-                                                          filter.MinStock,
-                                                          filter.MaxStock);
+                                                          filter.MinStockBalance,
+                                                          filter.MaxStockBalance);
 
             List<ProductModel> products = _mapper.Map<List<ProductModel>>(prodList);
 

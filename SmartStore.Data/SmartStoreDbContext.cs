@@ -12,7 +12,10 @@ namespace SmartStore.Data
         private readonly IConfiguration _config;
         private readonly IHostingEnvironment _env;
         public string ConnectionString { get; }
+
         public DbSet<Product> Products { get; set; }
+        public DbSet<StockMovement> StockMoviments { get; set; }
+        public DbSet<StockMovementType> StockMovementTypes { get; set; }
 
         public SmartStoreDbContext(DbContextOptions options, IConfiguration configuration, IHostingEnvironment env)
          : base(options)

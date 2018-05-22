@@ -17,26 +17,19 @@
                     data: JSON.stringify(objectifyForm($('form.search-product'))),
                     contentType: "application/json",
                     accepts: 'text/html',
-                    beforeSend: function () {
+                    beforeSend: () => {
                         processing = true;
                         $("#Results").html('<div class="loader mx-auto"></div>');
                     },
-                    error: function (context) {
-                        $("#Results").html(context);
-                    },
-                    success: function (context) {
-                        $("#Results").html(context);
-                    },
-                    complete: function () {
-                        processing = false;
-                    }
+                    error: (context) => $("#Results").html(context),
+                    success: (context) => $("#Results").html(context),
+                    complete: () => processing = false,
                 });
             }
         });
     });
 
 </script>
-
 
 <div class="row m-1 p-1">
     <form asp-action="Search" method="post" class="form-inline search-product">
@@ -53,10 +46,10 @@
             <input asp-for="MaxSellingPrice" class="form-control form-control-sm" placeholder="Maximun selling price" />
         </div>
         <div class="col p-0">
-            <input asp-for="MinStock" class="form-control form-control-sm" placeholder="Minimum stock" />
+            <input asp-for="MinStockBalance" class="form-control form-control-sm" placeholder="Minimum stock" />
         </div>
         <div class="col p-0">
-            <input asp-for="MaxStock" class="form-control form-control-sm" placeholder="Maximun stock" />
+            <input asp-for="MaxStockBalance" class="form-control form-control-sm" placeholder="Maximun stock" />
         </div>
     </form>
 </div>

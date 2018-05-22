@@ -12,7 +12,7 @@ namespace SmartStore.Web.Portal.Models
         public string Description { get; set; }
         public decimal? MinSellingPrice { get; set; }
         public decimal? MaxSellingPrice { get; set; }
-        public int? MinStock { get; set; }
-        public int? MaxStock { get; set; }
+        public int? MinStockBalance { get; set; }
+        public int? MaxStockBalance { get; set; }
     }
 }

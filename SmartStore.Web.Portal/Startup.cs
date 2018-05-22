@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartStore.Data;
 using SmartStore.Data.Entities;
+using SmartStore.Data.Initializers;
 using SmartStore.Web.Portal.Utility;
 
 namespace SmartStore.Web.Portal
@@ -36,6 +37,7 @@ namespace SmartStore.Web.Portal
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app,
             IHostingEnvironment env,
+            SmartStoreInitializer smartStoreInitializer,
             SmartStoreIdentityInitializer identityInitializer)
         {
             if (env.IsDevelopment())
@@ -56,6 +58,7 @@ namespace SmartStore.Web.Portal
 
             app.UseMvcWithDefaultRoute();
 
+            smartStoreInitializer.Seed().Wait();
             identityInitializer.Seed().Wait();
         }
     }
