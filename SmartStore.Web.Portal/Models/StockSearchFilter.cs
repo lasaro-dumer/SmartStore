@@ -14,5 +14,6 @@ namespace SmartStore.Web.Portal.Models
         public decimal? MaxSellingPrice { get; set; }
         public int? MinStockBalance { get; set; }
         public int? MaxStockBalance { get; set; }
+        public int? RecordsToReturn { get; set; }
     }
 }

@@ -8,5 +8,7 @@ namespace SmartStore.Data.Entities
         [Required]
         [MaxLength(30)]
         public string Name { get; set; }
+        [Required]
+        public bool AvailableAtScreen { get; set; }
     }
 }

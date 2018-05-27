@@ -32,7 +32,8 @@ namespace SmartStore.Data.Repositories
                                                          decimal? minSellingPrice = null,
                                                          decimal? maxSellingPrice = null,
                                                          int? minStockBalance = null,
-                                                         int? maxStockBalance = null)
+                                                         int? maxStockBalance = null,
+                                                         int? recordsToReturn = null)
         {
 
             var query = _context.StockMoviments
@@ -50,13 +51,7 @@ namespace SmartStore.Data.Repositories
 
             if (maxSellingPrice.HasValue)
                 query = query.Where(s => s.Product.SellingPrice <= maxSellingPrice);
-
-            if (minStockBalance.HasValue)
-                query = query.Where(s => s.Balance >= minStockBalance);
-
-            if (maxStockBalance.HasValue)
-                query = query.Where(s => s.Balance <= maxStockBalance);
-
+            
             List<StockMovement> productsStock = new List<StockMovement>();
 
             var products = query.Select(s => s.Product).Distinct().ToList();
@@ -64,9 +59,18 @@ namespace SmartStore.Data.Repositories
             foreach (var product in products)
             {
                 productsStock.Add(query.Where(s => s.Product.Id == product.Id)
-                                        .OrderBy(s => s.Date)
+                                        .OrderByDescending(s => s.Date)
                                         .FirstOrDefault());
             }
+
+            if (minStockBalance.HasValue)
+                productsStock = productsStock.Where(s => s.Balance >= minStockBalance).ToList();
+
+            if (maxStockBalance.HasValue)
+                productsStock = productsStock.Where(s => s.Balance <= maxStockBalance).ToList();
+
+            if (recordsToReturn.HasValue)
+                productsStock = productsStock.Take(recordsToReturn.Value).ToList();
 
             return productsStock.ToList();
         }

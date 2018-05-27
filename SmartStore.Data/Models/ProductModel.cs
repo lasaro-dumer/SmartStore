@@ -5,6 +5,7 @@ namespace SmartStore.Data.Models
 {
     public class ProductModel
     {
+        public int Id { get; set; }
         [Required]
         [MaxLength(30)]
         public string Name { get; set; }

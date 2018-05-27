@@ -6,50 +6,57 @@
 }
 
 <script type="text/javascript">
-    var processing = false;
+    var searchXHR = null;
+
+    var search = function () {
+        if (searchXHR != null && searchXHR.status == undefined)
+            searchXHR.abort();
+
+        searchXHR = $.ajax({
+            type: "POST",
+            url: '/Stock/Search',
+            data: JSON.stringify(objectifyForm($('form.search-product'))),
+            contentType: "application/json",
+            accepts: 'text/html',
+            beforeSend: () => $("#Results").html('<div class="loader mx-auto"></div>'),
+            error: (context) => $("#Results").html(context),
+            success: (context) => $("#Results").html(context)
+        });
+    };
 
     $(document).ready(function () {
-        $('form.search-product input').on('input', function () {
-            if (!processing) {
-                $.ajax({
-                    type: "POST",
-                    url: '/Stock/Search',
-                    data: JSON.stringify(objectifyForm($('form.search-product'))),
-                    contentType: "application/json",
-                    accepts: 'text/html',
-                    beforeSend: () => {
-                        processing = true;
-                        $("#Results").html('<div class="loader mx-auto"></div>');
-                    },
-                    error: (context) => $("#Results").html(context),
-                    success: (context) => $("#Results").html(context),
-                    complete: () => processing = false,
-                });
-            }
-        });
+        $('form.search-product input').on('input', search);
+
+        search();
     });
 
 </script>
 
 <div class="row m-1 p-1">
     <form asp-action="Search" method="post" class="form-inline search-product">
-        <div class="col p-0">
+        <div class="col-2 p-0">
             <input asp-for="Name" class="form-control form-control-sm" placeholder="Name" />
         </div>
-        <div class="col p-0">
+        <div class="col-2 p-0">
             <input asp-for="Description" class="form-control form-control-sm" placeholder="Description" />
         </div>
-        <div class="col p-0">
+        <div class="col-2 p-0">
             <input asp-for="MinSellingPrice" class="form-control form-control-sm" placeholder="Minimum selling price" />
         </div>
-        <div class="col p-0">
+        <div class="col-2 p-0">
             <input asp-for="MaxSellingPrice" class="form-control form-control-sm" placeholder="Maximun selling price" />
         </div>
-        <div class="col p-0">
+        <div class="col-2 p-0">
             <input asp-for="MinStockBalance" class="form-control form-control-sm" placeholder="Minimum stock" />
         </div>
-        <div class="col p-0">
+        <div class="col-2 p-0">
             <input asp-for="MaxStockBalance" class="form-control form-control-sm" placeholder="Maximun stock" />
+        </div>
+        <div class="col-2 p-0">
+            <label class="control-label">Records to return</label>
+        </div>
+        <div class="col-2 p-0">
+            <input asp-for="RecordsToReturn" class="form-control form-control-sm" value="20" />
         </div>
     </form>
 </div>
