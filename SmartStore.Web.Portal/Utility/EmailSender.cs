@@ -41,7 +41,8 @@ namespace SmartStore.Web.Portal.Utility
             _fromEmail = _configuration["Email:FromEmail"];
             _fromName = _configuration["Email:FromName"];
 
-            string templatePath = $@"{hostEnvironment.WebRootPath}\EmailTemplates";
+            string templatePath = Path.Combine(hostEnvironment.WebRootPath,"EmailTemplates");
+            
             _engine = new RazorLightEngineBuilder()
                           .UseFilesystemProject(templatePath)
                           .UseMemoryCachingProvider()

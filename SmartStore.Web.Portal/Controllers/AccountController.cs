@@ -156,7 +156,7 @@ namespace SmartStore.Web.Portal.Controllers
             {
                 _logger.LogError(ex, ex.Message);
             }
-            return View("Details");
+            return RedirectToAction("Details");
         }
 
         [HttpGet("[controller]/[action]/{token}", Name = "ConfirmEmail")]
