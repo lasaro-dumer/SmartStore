@@ -54,13 +54,13 @@
             <div>
                 @if (User.Identity.IsAuthenticated)
                 {
+                    @User.Identity.Name;
                     @if (isClient)
                     {
-                        <a asp-area="" asp-controller="Cart" asp-action="Index" class="btn btn-sm btn-danger">
+                        <a asp-area="" asp-controller="Cart" asp-action="Index" class="btn btn-sm btn-success">
                             <span class="oi oi-cart" title="Cart"></span>
                         </a>
                     }
-                    @User.Identity.Name;
                     <a asp-area="" asp-controller="Account" asp-action="Details" class="btn btn-sm btn-info">
                         <span class="oi oi-person" title="Account Details"></span>
                     </a>
@@ -70,6 +70,9 @@
                 }
                 else
                 {
+                    <a asp-area="" asp-controller="Cart" asp-action="Index" class="btn btn-sm btn-success">
+                        <span class="oi oi-cart" title="Cart"></span>
+                    </a>
                     <a asp-area="" asp-controller="Account" asp-action="Register" class="btn btn-sm btn-primary">
                         Create Account
                     </a>

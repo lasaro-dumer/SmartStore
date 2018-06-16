@@ -26,8 +26,16 @@ namespace SmartStore.Data.Initializers
 
         public async Task Seed()
         {
-            var user = await _userMgr.FindByNameAsync("storesysadmin");
+            if (!(await _roleMgr.RoleExistsAsync("Client")))
+            {
+                var role = new IdentityRole("Client");
+                var adminClaim = new IdentityRoleClaim<string>() { ClaimType = "IsAdmin", ClaimValue = "False" };
+                await _roleMgr.CreateAsync(role);
+                await _roleMgr.AddClaimAsync(role, adminClaim.ToClaim());
+            }
 
+            var user = await _userMgr.FindByNameAsync("storesysadmin");
+            
             // Add User
             if (user == null)
             {

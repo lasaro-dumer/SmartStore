@@ -108,6 +108,8 @@ namespace SmartStore.Web.Portal.Controllers
                 IdentityResult result = await _userMgr.CreateAsync(ue, user.Password);
                 if (result.Succeeded)
                 {
+                    await _userMgr.AddToRoleAsync(ue, "Client");
+
                     bool emailSent = await _emailSender.SendRegisterConfirmationEmailAsync(ue.Email,
                                                                                           ue.FirstName,
                                                                                           ue.LastName,
