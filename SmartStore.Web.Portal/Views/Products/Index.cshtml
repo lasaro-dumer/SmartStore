@@ -1,43 +1,92 @@
-﻿@model List<ProductModel>
+﻿@model ProductSearchFilter
 @{
     ViewData["Title"] = "Products Page";
     ViewData["ActiveMenu"] = "navProducts";
 }
-<div class="row">
-        @for (int i = 0; i < Model.Count; i++)
-        {
-            ProductModel prod = Model[i];
-            bool newRow = (i % 4) == 0;
-            @if(newRow)
-            {
-                @if(i != 0)
-                {
-                    @:</div>
-                }
-                @:<div class="row p-2">
-            }
-            <div class="col-md-3 col-sm-3 col-xs-12 image-main-section">
-                <div class="row img-part">
-                    <div class="col-md-12 col-sm-12 colxs-12 img-section">
-                        <img src="~/images/dummyImage.png">
-                    </div>
-                    <div class="col-md-12 col-sm-12 col-xs-12 image-title">
-                        <h3>@prod.Name</h3>
-                    </div>
-                    <div class="col-md-12 col-sm-12 col-xs-12 image-description">
-                        <p>@prod.Description</p>
-                    </div>
-                    <div class="col-md-12 col-sm-12 col-xs-12">
-                        <a href="#" class="btn btn-success btn-sm">
-                            <span class="oi oi-plus"></span>Add to cart
-                        </a>
-                        <a asp-action="Details" asp-route-id="@prod.Id" class="btn btn-primary btn-sm">Details</a>
-                    </div>
-                </div>
+
+<script type="text/javascript">
+    var searchXHR = null;
+
+    var search = function () {
+        if (searchXHR != null && searchXHR.status == undefined)
+            searchXHR.abort();
+
+        var formObj = objectifyForm($('form.search-product'));
+        formObj.Tags = [];
+        var tagsObjs = $('#TagsField').tokenfield('getTokens');
+
+        for (var i = 0; i < tagsObjs.length; i++) {
+            formObj.Tags.push(tagsObjs[i].value);
+        }
+
+        searchXHR = $.ajax({
+            type: "POST",
+            url: '/Products/Search',
+            data: JSON.stringify(formObj),
+            contentType: "application/json",
+            accepts: 'text/html',
+            beforeSend: () => $("#Results").html('<div class="loader mx-auto"></div>'),
+            error: (context) => $("#Results").html(context),
+            success: (context) => $("#Results").html(context)
+        });
+    };
+
+    $(document).ready(function () {
+        $('form.search-product input').on('input', search);
+
+        $('#TagsField')
+            .tokenfield({
+                autocomplete: {
+                    source: [@Html.Raw((TempData["ExistingTags"] != null ? TempData["ExistingTags"].ToString():""))],
+                    delay: 100
+                },
+                showAutocompleteOnFocus: true
+            })
+            .on('tokenfield:createdtoken', function (e) {
+                search();
+            })
+            .on('tokenfield:removedtoken', function (e) {
+                search();
+            });
+
+        search();
+    });
+
+</script>
+
+<form asp-action="Search" method="post" class="form-inline search-product">
+    <div class="container-fluid">
+        <div class="row my-1">
+            <div class="col-2 p-0 m-0">
+                <input asp-for="Name" class="form-control form-control-sm" placeholder="Name" />
             </div>
-        }
-        @if(Model.Count > 0)
-        {
-            @:</div>
-        }
+            <div class="col-2 p-0 m-0">
+                <input asp-for="Description" class="form-control form-control-sm" placeholder="Description" />
+            </div>
+            <div class="col-2 p-0 m-0">
+                <input asp-for="MinSellingPrice" class="form-control form-control-sm" placeholder="Minimum price" />
+            </div>
+            <div class="col-2 p-0 m-0">
+                <input asp-for="MaxSellingPrice" class="form-control form-control-sm" placeholder="Maximun price" />
+            </div>
+            <div class="col-2 p-0 m-0">
+                <label class="control-label">Products to list</label>
+            </div>
+            <div class="col-2 p-0 m-0">
+                <input asp-for="ProductsToList" class="form-control form-control-sm" value="20" />
+            </div>
+        </div>
+        <div class="row my-1">
+            <div class="col p-0 m-0">
+                <input id="TagsField" class="form-control form-control-sm" placeholder="Tags" />
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row m-1 p-1">
+    <div class="col">
+        <div id="Results"></div>
+    </div>
 </div>
+
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

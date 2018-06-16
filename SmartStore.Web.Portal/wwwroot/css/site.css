@@ -15,6 +15,15 @@
     width: 100%;
 }
 
+span.tag {
+    border: 1px solid black;
+    border-radius: 8px;
+    padding: 1px 6px;
+    margin: 1px;
+    background: #dbdbdb;
+    color: black;
+}
+
 .loader {
     border: 10px solid #f3f3f3; /* Light grey */
     border-top: 10px solid #3498db; /* Blue */

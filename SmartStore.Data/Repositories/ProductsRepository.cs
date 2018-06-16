@@ -97,5 +97,34 @@ namespace SmartStore.Data.Repositories
         {
             return _context.Tags.ToList();
         }
+
+        public IEnumerable<Product> GetProducts(string name, string description, decimal? minSellingPrice, decimal? maxSellingPrice, int? productsToList, string[] tags)
+        {
+            var productsQuery = _context.Products
+                                           .Include("ProductTags.Tag")
+                                           .AsQueryable();
+
+            if (!string.IsNullOrEmpty(name))
+                productsQuery = productsQuery.Where(s => s.Name.StartsWith(name, StringComparison.CurrentCultureIgnoreCase));
+
+            if (!string.IsNullOrEmpty(description))
+                productsQuery = productsQuery.Where(s => s.Description.Contains(description));
+
+            if (minSellingPrice.HasValue)
+                productsQuery = productsQuery.Where(s => s.SellingPrice >= minSellingPrice);
+
+            if (maxSellingPrice.HasValue)
+                productsQuery = productsQuery.Where(s => s.SellingPrice <= maxSellingPrice);
+
+            var products = productsQuery.ToList();
+
+            if (tags != null && tags.Length > 0)
+                products = products.Where(p => !tags.Except(p.Tags.Select(t => t.Name)).Any()).ToList();
+
+            if (productsToList.HasValue)
+                products = products.Take(productsToList.Value).ToList();
+
+            return products;
+        }
     }
 }
