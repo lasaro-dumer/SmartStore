@@ -3,16 +3,20 @@ const concat = require('gulp-concat');
 
 const vendorStyles = [
     "node_modules/bootstrap/dist/css/bootstrap.min.css",
-    "node_modules/open-iconic/font/css/open-iconic-bootstrap.min.css"
+    "node_modules/jquery-ui-dist/jquery-ui.min.css",
+    "node_modules/open-iconic/font/css/open-iconic-bootstrap.min.css",
+    "node_modules/bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css"
 ];
 const vendorScripts = [
     "node_modules/jquery/dist/jquery.min.js",
+    "node_modules/jquery-ui-dist/jquery-ui.min.js",
     "node_modules/jquery-validation/dist/jquery.validate.min.js",
     "node_modules/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
     "node_modules/popper.js/dist/umd/popper.min.js",
     "node_modules/bootstrap/dist/js/bootstrap.min.js",
     "node_modules/chart.js/dist/Chart.min.js",
-    "node_modules/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"
+    "node_modules/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js",
+    "node_modules/bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js"
 ];
 const vendorFonts = [
     "node_modules/open-iconic/font/fonts/open-iconic.woff",

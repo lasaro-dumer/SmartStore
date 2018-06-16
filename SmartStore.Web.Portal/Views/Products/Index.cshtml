@@ -25,10 +25,13 @@
                         <h3>@prod.Name</h3>
                     </div>
                     <div class="col-md-12 col-sm-12 col-xs-12 image-description">
-                        <p> @prod.Description </p>
+                        <p>@prod.Description</p>
                     </div>
                     <div class="col-md-12 col-sm-12 col-xs-12">
-                        <a href="#" class="btn btn-success add-cart-btn">ADD TO CART</a>
+                        <a href="#" class="btn btn-success btn-sm">
+                            <span class="oi oi-plus"></span>Add to cart
+                        </a>
+                        <a asp-action="Details" asp-route-id="@prod.Id" class="btn btn-primary btn-sm">Details</a>
                     </div>
                 </div>
             </div>

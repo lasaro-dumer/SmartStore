@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -7,9 +8,8 @@ using Microsoft.Extensions.Logging;
 using SmartStore.Data.Entities;
 using SmartStore.Data.Models;
 using SmartStore.Data.Repositories.Interfaces;
-using SmartStore.Web.Portal.Utility;
 using SmartStore.Web.Portal.Models;
-using System.Threading.Tasks;
+using SmartStore.Web.Portal.Utility;
 
 namespace SmartStore.Web.Portal.Controllers
 {
@@ -27,7 +27,8 @@ namespace SmartStore.Web.Portal.Controllers
             IUsersRepository usersRepo,
             IMapper mapper,
             ILogger<AccountController> logger,
-            EmailSender emailSender)
+            EmailSender emailSender,
+            IProductsRepository productsRepo)
         {
             _signInMgr = signInMgr;
             _userMgr = userMgr;

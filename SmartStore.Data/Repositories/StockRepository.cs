@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using SmartStore.Data.Entities;
 using SmartStore.Data.Models;
 using SmartStore.Data.Repositories.Interfaces;
@@ -33,7 +34,9 @@ namespace SmartStore.Data.Repositories
         {
             StockMovement stockMovement = new StockMovement()
             {
-                Product = _context.Products.SingleOrDefault(p => p.Id == productId),
+                Product = _context.Products
+                                    .Include("ProductTags.Tag")
+                                    .SingleOrDefault(p => p.Id == productId),
                 MovementType = _context.StockMovementTypes.SingleOrDefault(t => t.Id == movementTypeId),
                 Amount = amount,
                 Date = DateTime.Now

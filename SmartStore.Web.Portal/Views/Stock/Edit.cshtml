@@ -1,8 +1,5 @@
-﻿@model ProductModel
-@{
-    ViewData["Title"] = "New Product";
-    ViewData["ActiveMenu"] = "navStock";
-}
+﻿@model SmartStore.Data.Models.ProductModel
+
 <script>
     function saveProduct() {
         var tagsObjs = $('#TagsField').tokenfield('getTokens');
@@ -28,12 +25,16 @@
         $('#TagsField').tokenfield('setTokens', modelTokens);
     });
 </script>
-<h4>New Product</h4>
+<h4>Product Editing</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="NewProduct" method="post">
+        <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Id" class="control-label"></label>
+                <input asp-for="Id" class="form-control" disabled="disabled" />
+            </div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -58,6 +59,10 @@
             </div>
         </form>
     </div>
+</div>
+
+<div>
+    <a asp-action="Status">Back to List</a>
 </div>
 
 @section Scripts {

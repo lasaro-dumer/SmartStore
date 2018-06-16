@@ -18,24 +18,26 @@ namespace SmartStore.Data.Repositories
         public Product GetProductById(int id)
         {
             return _context.Products
-                .Where(p => p.Id == id)
-                .FirstOrDefault();
+                            .Where(p => p.Id == id)
+                            .Include("ProductTags.Tag")
+                            .FirstOrDefault();
         }
 
         public IEnumerable<Product> GetProducts()
         {
-            return _context.Products.ToList();
+            return _context.Products
+                            .Include("ProductTags.Tag")
+                            .ToList();
         }
 
         public IEnumerable<StockMovement> GetProductsWithStock(string name = null,
-                                                         string description = null,
-                                                         decimal? minSellingPrice = null,
-                                                         decimal? maxSellingPrice = null,
-                                                         int? minStockBalance = null,
-                                                         int? maxStockBalance = null,
-                                                         int? recordsToReturn = null)
+                                                               string description = null,
+                                                               decimal? minSellingPrice = null,
+                                                               decimal? maxSellingPrice = null,
+                                                               int? minStockBalance = null,
+                                                               int? maxStockBalance = null,
+                                                               int? recordsToReturn = null)
         {
-
             var query = _context.StockMoviments
                                 .Include(s => s.Product)
                                 .AsQueryable();
@@ -51,7 +53,7 @@ namespace SmartStore.Data.Repositories
 
             if (maxSellingPrice.HasValue)
                 query = query.Where(s => s.Product.SellingPrice <= maxSellingPrice);
-            
+
             List<StockMovement> productsStock = new List<StockMovement>();
 
             var products = query.Select(s => s.Product).Distinct().ToList();
@@ -73,6 +75,19 @@ namespace SmartStore.Data.Repositories
                 productsStock = productsStock.Take(recordsToReturn.Value).ToList();
 
             return productsStock.ToList();
+        }
+
+        public void FillTags(Product product)
+        {
+            var tagString = product.Tags.Select(t => t.Name).ToArray();
+            var existingTags = _context.Tags.Where(t => tagString.Contains(t.Name)).ToList();
+
+            product.FillTags(existingTags);
+        }
+
+        public IEnumerable<Tag> GetExistingTags()
+        {
+            return _context.Tags.ToList();
         }
     }
 }

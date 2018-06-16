@@ -33,9 +33,18 @@ namespace SmartStore.Web.Portal.Controllers
             _logger = logger;
         }
 
+        protected void LoadExistingTags()
+        {
+            IEnumerable<Tag> existingTags = _productsRepo.GetExistingTags();
+
+            TempData["ExistingTags"] = string.Join(',', existingTags.Select(t => $"'{t.Name}'").ToArray());
+        }
+
         [HttpGet, Authorize]
         public IActionResult NewProduct()
         {
+            LoadExistingTags();
+
             return View();
         }
 
@@ -45,7 +54,9 @@ namespace SmartStore.Web.Portal.Controllers
             bool saved = false;
             try
             {
+                productModel.Tags = productModel.Tags.Distinct().ToArray();
                 Product pe = _mapper.Map<Product>(productModel);
+                _productsRepo.FillTags(pe);
                 _productsRepo.Add(pe);
                 saved = await _productsRepo.SaveAllAsync();
             }
@@ -53,6 +64,7 @@ namespace SmartStore.Web.Portal.Controllers
             {
                 _logger.LogError(ex, ex.Message);
             }
+
             if (saved)
             {
                 this.AddInformationMessage($"Product {productModel.Name} saved successfully");
@@ -61,7 +73,52 @@ namespace SmartStore.Web.Portal.Controllers
             else
             {
                 this.AddErrorMessage($"Unable to save product {productModel.Name}");
-                return View();
+                LoadExistingTags();
+                return View(productModel);
+            }
+        }
+
+        [HttpGet, Authorize]
+        public IActionResult Edit(int id)
+        {
+            var product = _productsRepo.GetProductById(id);
+            ProductModel productModel = _mapper.Map<ProductModel>(product);
+            LoadExistingTags();
+            return View(productModel);
+        }
+
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Edit(ProductModel productModel)
+        {
+            bool saved = false;
+            try
+            {
+                productModel.Tags = productModel.Tags.Distinct().ToArray();
+                Product pe = _productsRepo.GetProductById(productModel.Id);
+                pe.Description = productModel.Description;
+                pe.Name = productModel.Name;
+                pe.SellingPrice = productModel.SellingPrice;
+                pe.UpdateTags(productModel.Tags);
+
+                _productsRepo.FillTags(pe);
+                _productsRepo.Update(pe);
+                saved = await _productsRepo.SaveAllAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+            }
+
+            if (saved)
+            {
+                this.AddInformationMessage($"Product {productModel.Name} saved successfully");
+                return RedirectToAction("Status");
+            }
+            else
+            {
+                this.AddErrorMessage($"Unable to save product {productModel.Name}");
+                LoadExistingTags();
+                return View(productModel);
             }
         }
 

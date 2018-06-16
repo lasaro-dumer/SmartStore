@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SmartStore.Data.Models
@@ -18,5 +19,6 @@ namespace SmartStore.Data.Models
         public int StockBalance { get; set; }
         [Display(Name = "Last Stock Movement Date")]
         public DateTime LastStockMovementDate { get; set; }
+        public string[] Tags { get; set; }
     }
 }

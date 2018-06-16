@@ -3,7 +3,12 @@
 }
 
 .oi {
+    padding-right: 5px;
     margin: 2px;
+}
+
+.tokenfield .token {
+    height: auto;
 }
 
 .loader {

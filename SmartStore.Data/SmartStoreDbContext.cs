@@ -16,6 +16,7 @@ namespace SmartStore.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<StockMovement> StockMoviments { get; set; }
         public DbSet<StockMovementType> StockMovementTypes { get; set; }
+        public DbSet<Tag> Tags { get; set; }
 
         public SmartStoreDbContext(DbContextOptions options, IConfiguration configuration, IHostingEnvironment env)
          : base(options)
@@ -44,6 +45,21 @@ namespace SmartStore.Data
               .Property(p => p.RowVersion)
               .ValueGeneratedOnAddOrUpdate()
               .IsConcurrencyToken();
+
+            modelBuilder.Entity<Tag>()
+                 .HasIndex(u => u.Name)
+                 .IsUnique();
+
+            modelBuilder.Entity<ProductTag>()
+                .HasKey(t => new { t.ProductId, t.TagId });
+
+            modelBuilder.Entity<ProductTag>()
+                .HasOne(pt => pt.Product)
+                .WithMany("ProductTags");
+
+            modelBuilder.Entity<ProductTag>()
+                .HasOne(pt => pt.Tag)
+                .WithMany("ProductTags");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
