@@ -125,6 +125,7 @@ namespace SmartStore.Web.Portal.Controllers
         [HttpGet, Authorize]
         public IActionResult Status()
         {
+            LoadExistingTags();
             return View();
         }
 
@@ -143,7 +144,8 @@ namespace SmartStore.Web.Portal.Controllers
                                                               filter.MaxSellingPrice,
                                                               filter.MinStockBalance,
                                                               filter.MaxStockBalance,
-                                                              filter.RecordsToReturn);
+                                                              filter.RecordsToReturn,
+                                                              filter.Tags);
 
                 products = _mapper.Map<List<ProductModel>>(prodList);
             }

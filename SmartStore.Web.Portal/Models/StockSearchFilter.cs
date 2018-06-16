@@ -15,5 +15,6 @@ namespace SmartStore.Web.Portal.Models
         public int? MinStockBalance { get; set; }
         public int? MaxStockBalance { get; set; }
         public int? RecordsToReturn { get; set; }
+        public string[] Tags { get; set; }
     }
 }

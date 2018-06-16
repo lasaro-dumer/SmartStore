@@ -12,10 +12,18 @@
         if (searchXHR != null && searchXHR.status == undefined)
             searchXHR.abort();
 
+        var formObj = objectifyForm($('form.search-product'));
+        formObj.Tags = [];
+        var tagsObjs = $('#TagsField').tokenfield('getTokens');
+        
+        for (var i = 0; i < tagsObjs.length; i++) {
+            formObj.Tags.push(tagsObjs[i].value);
+        }
+
         searchXHR = $.ajax({
             type: "POST",
             url: '/Stock/Search',
-            data: JSON.stringify(objectifyForm($('form.search-product'))),
+            data: JSON.stringify(formObj),
             contentType: "application/json",
             accepts: 'text/html',
             beforeSend: () => $("#Results").html('<div class="loader mx-auto"></div>'),
@@ -27,39 +35,63 @@
     $(document).ready(function () {
         $('form.search-product input').on('input', search);
 
+        $('#TagsField')
+            .tokenfield({
+                autocomplete: {
+                    source: [@Html.Raw((TempData["ExistingTags"] != null ? TempData["ExistingTags"].ToString():""))],
+                    delay: 100
+                },
+                showAutocompleteOnFocus: true
+            })
+            .on('tokenfield:createdtoken', function (e) {
+                search();
+            })
+            .on('tokenfield:removedtoken', function (e) {
+                search();
+            });
+
         search();
     });
 
 </script>
 
-<div class="row m-1 p-1">
-    <form asp-action="Search" method="post" class="form-inline search-product">
-        <div class="col-2 p-0">
-            <input asp-for="Name" class="form-control form-control-sm" placeholder="Name" />
+<form asp-action="Search" method="post" class="form-inline search-product">
+    <div class="container-fluid">
+        <div class="row my-1">
+            <div class="col-2">
+                <input asp-for="Name" class="form-control form-control-sm" placeholder="Name" />
+            </div>
+            <div class="col-2">
+                <input asp-for="Description" class="form-control form-control-sm" placeholder="Description" />
+            </div>
+            <div class="col-2">
+                <input asp-for="MinSellingPrice" class="form-control form-control-sm" placeholder="Minimum selling price" />
+            </div>
+            <div class="col-2">
+                <input asp-for="MaxSellingPrice" class="form-control form-control-sm" placeholder="Maximun selling price" />
+            </div>
+            <div class="col-2">
+                <input asp-for="MinStockBalance" class="form-control form-control-sm" placeholder="Minimum stock" />
+            </div>
+            <div class="col-2">
+                <input asp-for="MaxStockBalance" class="form-control form-control-sm" placeholder="Maximun stock" />
+            </div>
         </div>
-        <div class="col-2 p-0">
-            <input asp-for="Description" class="form-control form-control-sm" placeholder="Description" />
+        <div class="row my-1">
+            <div class="col">
+                <input id="TagsField" class="form-control form-control-sm" placeholder="Tags" />
+            </div>
         </div>
-        <div class="col-2 p-0">
-            <input asp-for="MinSellingPrice" class="form-control form-control-sm" placeholder="Minimum selling price" />
+        <div class="row my-1">
+            <div class="col-2">
+                <label class="control-label">Records to return</label>
+            </div>
+            <div class="col-2">
+                <input asp-for="RecordsToReturn" class="form-control form-control-sm" value="20" />
+            </div>
         </div>
-        <div class="col-2 p-0">
-            <input asp-for="MaxSellingPrice" class="form-control form-control-sm" placeholder="Maximun selling price" />
-        </div>
-        <div class="col-2 p-0">
-            <input asp-for="MinStockBalance" class="form-control form-control-sm" placeholder="Minimum stock" />
-        </div>
-        <div class="col-2 p-0">
-            <input asp-for="MaxStockBalance" class="form-control form-control-sm" placeholder="Maximun stock" />
-        </div>
-        <div class="col-2 p-0">
-            <label class="control-label">Records to return</label>
-        </div>
-        <div class="col-2 p-0">
-            <input asp-for="RecordsToReturn" class="form-control form-control-sm" value="20" />
-        </div>
-    </form>
-</div>
+    </div>
+</form>
 <div class="row m-1 p-1">
     <div class="col">
         <div id="Results"></div>

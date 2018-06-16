@@ -36,27 +36,35 @@ namespace SmartStore.Data.Repositories
                                                                decimal? maxSellingPrice = null,
                                                                int? minStockBalance = null,
                                                                int? maxStockBalance = null,
-                                                               int? recordsToReturn = null)
+                                                               int? recordsToReturn = null,
+                                                               string[] tags = null)
         {
+            var productsQuery = _context.Products
+                                        .Include("ProductTags.Tag")
+                                        .AsQueryable();
+
+            if (!string.IsNullOrEmpty(name))
+                productsQuery = productsQuery.Where(s => s.Name.StartsWith(name, StringComparison.CurrentCultureIgnoreCase));
+
+            if (!string.IsNullOrEmpty(description))
+                productsQuery = productsQuery.Where(s => s.Description.Contains(description));
+
+            if (minSellingPrice.HasValue)
+                productsQuery = productsQuery.Where(s => s.SellingPrice >= minSellingPrice);
+
+            if (maxSellingPrice.HasValue)
+                productsQuery = productsQuery.Where(s => s.SellingPrice <= maxSellingPrice);
+
             var query = _context.StockMoviments
                                 .Include(s => s.Product)
                                 .AsQueryable();
 
-            if (!string.IsNullOrEmpty(name))
-                query = query.Where(s => s.Product.Name.StartsWith(name, StringComparison.CurrentCultureIgnoreCase));
-
-            if (!string.IsNullOrEmpty(description))
-                query = query.Where(s => s.Product.Description.Contains(description));
-
-            if (minSellingPrice.HasValue)
-                query = query.Where(s => s.Product.SellingPrice >= minSellingPrice);
-
-            if (maxSellingPrice.HasValue)
-                query = query.Where(s => s.Product.SellingPrice <= maxSellingPrice);
-
             List<StockMovement> productsStock = new List<StockMovement>();
 
-            var products = query.Select(s => s.Product).Distinct().ToList();
+            var products = productsQuery.ToList();
+
+            if (tags != null && tags.Length > 0)
+                products = products.Where(p => !tags.Except(p.Tags.Select(t => t.Name)).Any()).ToList();
 
             foreach (var product in products)
             {
