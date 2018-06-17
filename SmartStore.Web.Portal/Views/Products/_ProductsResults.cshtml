@@ -2,6 +2,18 @@
 
 @if (Model.Any())
 {
+    <script>
+        var addToCart = function (productId) {
+            $.ajax({
+                type: "POST",
+                url: '/Cart/AddProductToCart',
+                data: JSON.stringify({ Id: productId}),
+                contentType: "application/json",
+                error: (context) => console.log(`Failed to AddProductToCart ${context}`),
+                success: (context) => console.log(`Success on AddProductToCart ${context}`)
+            });
+        };
+    </script>
     <div class="row">
         @for (int i = 0; i < Model.Count(); i++)
         {
@@ -27,7 +39,7 @@
                         <p>@prod.Description</p>
                     </div>
                     <div class="col-md-12 col-sm-12 col-xs-12">
-                        <a href="#" class="btn btn-success btn-sm">
+                        <a href="#" onclick="addToCart(@prod.Id);" class="btn btn-success btn-sm">
                             <span class="oi oi-plus"></span><span class="oi oi-cart"></span>
                         </a>
                         <a asp-action="Details" asp-route-id="@prod.Id" class="btn btn-primary btn-sm"><span class="oi oi-info"></span></a>

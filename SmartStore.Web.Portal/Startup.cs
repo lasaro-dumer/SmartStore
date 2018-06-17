@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SmartStore.Data;
 using SmartStore.Data.Entities;
 using SmartStore.Data.Initializers;
+using SmartStore.Web.Portal.Models;
 using SmartStore.Web.Portal.Utility;
 
 namespace SmartStore.Web.Portal
@@ -32,6 +34,16 @@ namespace SmartStore.Web.Portal
                 .AddEntityFrameworkStores<SmartStoreDbContext>();
 
             services.AddMvc();
+
+            // Adds a default in-memory implementation of IDistributedCache.
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                // Set a short timeout for easy testing.
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,6 +67,17 @@ namespace SmartStore.Web.Portal
             app.UseStaticFiles();
 
             app.UseAuthentication();
+
+            app.UseSession();
+
+            app.Use((httpContext, nextMiddleware) =>
+            {
+                var sessionCart = httpContext.Session.Get<CartModel>(SessionExtensions.SessionCart);
+                if(sessionCart == null)
+                    httpContext.Session.Set(SessionExtensions.SessionCart, new CartModel());
+
+                return nextMiddleware();
+            });
 
             app.UseMvcWithDefaultRoute();
 

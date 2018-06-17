@@ -1,31 +1,106 @@
-﻿<div class="row">
+﻿@model CartModel
+<script>
+    var evaluateTotals = function () {
+        var cartTotal = 0;
+
+        $('.product-row').each(function (index, element) {
+            var quantity = $(element).find('.product-quantity').val();
+            var price = $(element).find('.product-price').val();
+            var total = quantity * price;
+            $(element).find('.product-total span').text(total);
+            cartTotal += total;
+        });
+
+        $('.cart-total').text(cartTotal);
+        saveCartToSession();
+    };
+
+    var saveCartToSession = function () {
+        var formObj = objectifyForm($('form.cart-form'));
+
+        $.ajax({
+            type: "POST",
+            url: '/Cart/SaveCartToSession',
+            data: JSON.stringify(formObj),
+            contentType: "application/json",
+            //success: (context) => console.log(`Success on SaveCartToSession ${context}`),
+            error: (context) => console.log(`Failed to SaveCartToSession ${context}`)
+        });
+    };
+
+    $(document).ready(function () {
+        $('.product-quantity').change(function () {
+            evaluateTotals();
+        });
+
+        $('.quantity-remove').click(function () {
+            var curVal = $(this).parents('.input-group').find('.product-quantity').val();
+            if (curVal > 1) {
+                curVal--;
+                $(this).parents('.input-group').find('.product-quantity').val(curVal).change();
+            }
+        });
+
+        $('.quantity-add').click(function () {
+            var curVal = $(this).parents('.input-group').find('.product-quantity').val();
+            curVal++;
+            $(this).parents('.input-group').find('.product-quantity').val(curVal).change();
+        });
+
+        $('.product-remove').click(function () {
+            $(this).parents('.product-row').remove();
+            evaluateTotals();
+        });
+
+        evaluateTotals();
+    });
+</script>
+<div class="row">
     <div class="col">
-        <div class="row">
-            <h3>Your current cart</h3>
-        </div>
-        @for (int i = 0; i < 5; i++)
-        {
+        <form class="cart-form">
             <div class="row">
-                <div class="col">
-                    Product Name
-                </div>
-                <div class="col">
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <button class="btn btn-outline-secondary" type="button"><span class="oi oi-minus"></span></button>
-                        </div>
-                        <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1">
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button"><span class="oi oi-plus"></span></button>
-                            <button class="btn btn-outline-secondary" type="button"><span class="oi oi-trash"></span></button>
+                <h3>Your current cart</h3>
+            </div>
+            @for (int i = 0; i < Model.Products.Length; i++)
+            {
+                <div class="row product-row">
+                    <div class="col">
+                        <input asp-for="@Model.Products[i].ProductId" type="hidden" />
+                        <input asp-for="@Model.Products[i].ProductName" type="hidden" />
+                        <label>@Model.Products[i].ProductName</label>
+                    </div>
+                    <div class="col">
+                        <input class="product-price" asp-for="@Model.Products[i].UnitPrice" type="hidden" />
+                        <label>R$ @Model.Products[i].UnitPrice</label>
+                    </div>
+                    <div class="col">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <button class="quantity-remove btn btn-outline-danger" type="button"><span class="oi oi-minus"></span></button>
+                            </div>
+                            <input asp-for="@Model.Products[i].Quantity" type="text" class="product-quantity form-control">
+                            <div class="input-group-append">
+                                <button class="quantity-add btn btn-outline-success" type="button"><span class="oi oi-plus"></span></button>
+                                <button class="product-remove btn btn-danger" type="button"><span class="oi oi-trash"></span></button>
+                            </div>
                         </div>
                     </div>
+                    <div class="col">
+                        <label class="product-total">R$ <span>0.00</span></label>
+                    </div>
+                </div>
+            }
+            <div class="row justify-content-end">
+                <div class="col-3">
+                    <label>R$ <span class="cart-total">0.00</span></label>
                 </div>
             </div>
-        }
-        <div class="row">
-            <button class="btn btn-success">Check out</button>
-        </div>
+            <div class="row justify-content-end">
+                <div class="col-3">
+                    <button class="btn btn-success" type="submit">Check out</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
