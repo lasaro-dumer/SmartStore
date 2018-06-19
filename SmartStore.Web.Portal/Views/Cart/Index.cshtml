@@ -61,24 +61,24 @@
             <div class="row">
                 <h3>Your current cart</h3>
             </div>
-            @for (int i = 0; i < Model.Products.Length; i++)
+            @for (int i = 0; i < Model.CartItems.Length; i++)
             {
                 <div class="row product-row">
                     <div class="col">
-                        <input asp-for="@Model.Products[i].ProductId" type="hidden" />
-                        <input asp-for="@Model.Products[i].ProductName" type="hidden" />
-                        <label>@Model.Products[i].ProductName</label>
+                        <input asp-for="@Model.CartItems[i].ProductId" type="hidden" />
+                        <input asp-for="@Model.CartItems[i].ProductName" type="hidden" />
+                        <label>@Model.CartItems[i].ProductName</label>
                     </div>
                     <div class="col">
-                        <input class="product-price" asp-for="@Model.Products[i].UnitPrice" type="hidden" />
-                        <label>R$ @Model.Products[i].UnitPrice</label>
+                        <input class="product-price" asp-for="@Model.CartItems[i].UnitPrice" type="hidden" />
+                        <label>R$ @Model.CartItems[i].UnitPrice</label>
                     </div>
                     <div class="col">
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <button class="quantity-remove btn btn-outline-danger" type="button"><span class="oi oi-minus"></span></button>
                             </div>
-                            <input asp-for="@Model.Products[i].Quantity" type="text" class="product-quantity form-control">
+                            <input asp-for="@Model.CartItems[i].Quantity" type="text" class="product-quantity form-control">
                             <div class="input-group-append">
                                 <button class="quantity-add btn btn-outline-success" type="button"><span class="oi oi-plus"></span></button>
                                 <button class="product-remove btn btn-danger" type="button"><span class="oi oi-trash"></span></button>

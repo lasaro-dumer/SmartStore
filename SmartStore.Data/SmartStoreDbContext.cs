@@ -17,6 +17,8 @@ namespace SmartStore.Data
         public DbSet<StockMovement> StockMoviments { get; set; }
         public DbSet<StockMovementType> StockMovementTypes { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
 
         public SmartStoreDbContext(DbContextOptions options, IConfiguration configuration, IHostingEnvironment env)
          : base(options)
@@ -60,6 +62,9 @@ namespace SmartStore.Data
             modelBuilder.Entity<ProductTag>()
                 .HasOne(pt => pt.Tag)
                 .WithMany("ProductTags");
+
+            modelBuilder.Entity<CartItem>()
+                .HasKey(c => new { c.ProductId, c.ShoppingCartId });
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

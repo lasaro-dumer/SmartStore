@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SmartStore.Web.Portal.Models
 {
@@ -9,9 +7,36 @@ namespace SmartStore.Web.Portal.Models
     {
         public CartModel()
         {
-            Products = new CartProductModel[] { };
+            CartItems = new CartItemModel[] { };
+            LastUpdated = DateTime.Now;
         }
 
-        public CartProductModel[] Products { get; set; }
+        public int Id { get; set; }
+        public string UserId { get; set; }
+        public string UnauthenticatedUserId { get; set; }
+        public CartItemModel[] CartItems { get; set; }
+        public DateTime LastUpdated { get; set; }
+
+        internal bool Merge(CartModel otherCart)
+        {
+            if (otherCart != null && Id != otherCart.Id)
+            {
+                var existingItems = otherCart.CartItems.Intersect(CartItems);
+                var newItems = otherCart.CartItems.Except(existingItems);
+
+                for (int i = 0; i < CartItems.Length; i++)
+                {
+                    int? moreQuantity = (existingItems.FirstOrDefault(ci => ci.ProductId == CartItems[i].ProductId)?.Quantity);
+                    if (moreQuantity.HasValue)
+                        CartItems[i].Quantity += moreQuantity.Value;
+                }
+
+                CartItems = CartItems.Concat(newItems).ToArray();
+
+                return true;
+            }
+
+            return false;
+        }
     }
 }

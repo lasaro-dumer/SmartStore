@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -21,14 +22,16 @@ namespace SmartStore.Web.Portal.Controllers
         private IMapper _mapper;
         private ILogger<AccountController> _logger;
         private readonly EmailSender _emailSender;
+        private IShoppingRepository _shoppingRepo;
 
         public AccountController(SignInManager<UserEntity> signInMgr,
-            UserManager<UserEntity> userMgr,
-            IUsersRepository usersRepo,
-            IMapper mapper,
-            ILogger<AccountController> logger,
-            EmailSender emailSender,
-            IProductsRepository productsRepo)
+                                UserManager<UserEntity> userMgr,
+                                IUsersRepository usersRepo,
+                                IMapper mapper,
+                                ILogger<AccountController> logger,
+                                EmailSender emailSender,
+                                IProductsRepository productsRepo,
+                                IShoppingRepository shoppingRepo)
         {
             _signInMgr = signInMgr;
             _userMgr = userMgr;
@@ -36,6 +39,7 @@ namespace SmartStore.Web.Portal.Controllers
             _mapper = mapper;
             _logger = logger;
             _emailSender = emailSender;
+            _shoppingRepo = shoppingRepo;
         }
 
         [HttpGet, Authorize]
@@ -55,7 +59,7 @@ namespace SmartStore.Web.Portal.Controllers
         }
 
         [HttpPost, AllowAnonymous]
-        public async System.Threading.Tasks.Task<IActionResult> Login([FromForm]CredentialModel credential)
+        public async Task<IActionResult> Login([FromForm]CredentialModel credential)
         {
             try
             {
@@ -63,6 +67,38 @@ namespace SmartStore.Web.Portal.Controllers
 
                 if (result.Succeeded)
                 {
+                    CartModel cartFromDb = null;
+                    CartModel sessionCart = HttpContext.Session.Get<CartModel>(Utility.SessionExtensions.SessionCart);
+
+                    if (sessionCart == null)
+                    {
+                        sessionCart = new CartModel();
+                    }
+
+                    UserEntity ue = _usersRepo.GetUserByUsername(credential.UserName);
+
+                    ShoppingCart shoppingCart = _shoppingRepo.GetShoppingCartFromUser(ue.Id, null);
+
+                    if (shoppingCart != null)
+                    {
+                        cartFromDb = _mapper.Map<CartModel>(shoppingCart);
+
+                        if (cartFromDb != null)
+                        {
+                            if (sessionCart.Merge(cartFromDb))
+                            {
+                                _shoppingRepo.DeleteCart(shoppingCart);
+                                sessionCart.UserId = ue.Id;
+                                sessionCart.UnauthenticatedUserId = null;
+                                _shoppingRepo.SaveCart(_mapper.Map<ShoppingCart>(sessionCart));
+                            }
+                        }
+                    }
+
+                    HttpContext.Session.Set(Utility.SessionExtensions.SessionCart, sessionCart);
+
+                    HttpContext.Response.Cookies.Delete(CookieUserId);
+
                     if (!string.IsNullOrEmpty(credential.ReturnUrl))
                         return Redirect(credential.ReturnUrl);
                     return RedirectToAction("Index", "Home");
@@ -84,6 +120,7 @@ namespace SmartStore.Web.Portal.Controllers
         public IActionResult Logout()
         {
             _signInMgr.SignOutAsync();
+            HttpContext.Session.Remove(Utility.SessionExtensions.SessionCart);
 
             return RedirectToAction("Index", "Home");
         }

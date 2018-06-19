@@ -6,6 +6,7 @@ namespace SmartStore.Web.Portal.Utility
     public abstract class BaseController : Controller
     {
         public const string URLHELPER = "URLHELPER";
+        public const string CookieUserId = "_UnauthenticatedUserId";
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {

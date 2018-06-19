@@ -11,9 +11,10 @@ using System;
 namespace SmartStore.Data.Migrations
 {
     [DbContext(typeof(SmartStoreDbContext))]
-    partial class SmartStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180617214129_v0.7")]
+    partial class v07
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -39,9 +39,9 @@
                         <p>@prod.Description</p>
                     </div>
                     <div class="col-md-12 col-sm-12 col-xs-12">
-                        <a href="#" onclick="addToCart(@prod.Id);" class="btn btn-success btn-sm">
+                        <button onclick="addToCart(@prod.Id);" class="btn btn-success btn-sm">
                             <span class="oi oi-plus"></span><span class="oi oi-cart"></span>
-                        </a>
+                        </button>
                         <a asp-action="Details" asp-route-id="@prod.Id" class="btn btn-primary btn-sm"><span class="oi oi-info"></span></a>
                     </div>
                 </div>

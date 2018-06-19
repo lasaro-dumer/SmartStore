@@ -1,6 +1,6 @@
 ﻿namespace SmartStore.Web.Portal.Models
 {
-    public class CartProductModel
+    public class CartItemModel
     {
         public int ProductId { get; set; }
         public string ProductName { get; set; }

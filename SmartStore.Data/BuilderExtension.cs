@@ -13,6 +13,7 @@ namespace SmartStore.Data
             services.AddScoped<IProductsRepository, ProductsRepository>();
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<IStockRepository, StockRepository>();
+            services.AddScoped<IShoppingRepository, ShoppingRepository>();
             services.AddTransient<SmartStoreIdentityInitializer>();
             services.AddTransient<SmartStoreInitializer>();
 

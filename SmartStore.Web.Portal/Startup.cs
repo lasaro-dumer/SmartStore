@@ -2,13 +2,13 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartStore.Data;
 using SmartStore.Data.Entities;
 using SmartStore.Data.Initializers;
-using SmartStore.Web.Portal.Models;
 using SmartStore.Web.Portal.Utility;
 
 namespace SmartStore.Web.Portal
@@ -72,9 +72,21 @@ namespace SmartStore.Web.Portal
 
             app.Use((httpContext, nextMiddleware) =>
             {
-                var sessionCart = httpContext.Session.Get<CartModel>(SessionExtensions.SessionCart);
-                if(sessionCart == null)
-                    httpContext.Session.Set(SessionExtensions.SessionCart, new CartModel());
+                if (!httpContext.User.Identity.IsAuthenticated &&
+                    !httpContext.Request.Cookies.ContainsKey(BaseController.CookieUserId))
+                {
+                    httpContext.Response.Cookies.Append(BaseController.CookieUserId,
+                                                        Guid.NewGuid().ToString(),
+                                                        new CookieOptions()
+                                                        {
+                                                            Expires = DateTimeOffset.Now.AddDays(30),
+                                                        });
+                }
+                else if (httpContext.User.Identity.IsAuthenticated &&
+                         httpContext.Request.Cookies.ContainsKey(BaseController.CookieUserId))
+                {
+                    httpContext.Response.Cookies.Delete(BaseController.CookieUserId);
+                }
 
                 return nextMiddleware();
             });
