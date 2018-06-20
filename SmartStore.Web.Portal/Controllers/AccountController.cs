@@ -88,12 +88,13 @@ namespace SmartStore.Web.Portal.Controllers
                             if (sessionCart.Merge(cartFromDb))
                             {
                                 _shoppingRepo.DeleteCart(shoppingCart);
-                                sessionCart.UserId = ue.Id;
-                                sessionCart.UnauthenticatedUserId = null;
-                                _shoppingRepo.SaveCart(_mapper.Map<ShoppingCart>(sessionCart));
                             }
                         }
                     }
+
+                    sessionCart.UserId = ue.Id;
+                    sessionCart.UnauthenticatedUserId = null;
+                    _shoppingRepo.SaveCart(_mapper.Map<ShoppingCart>(sessionCart));
 
                     HttpContext.Session.Set(Utility.SessionExtensions.SessionCart, sessionCart);
 
@@ -132,7 +133,7 @@ namespace SmartStore.Web.Portal.Controllers
         }
 
         [HttpPost, AllowAnonymous]
-        public async System.Threading.Tasks.Task<IActionResult> Register(NewUserModel user)
+        public async Task<IActionResult> Register(NewUserModel user)
         {
             if (ModelState.IsValid)
             {
@@ -240,6 +241,43 @@ namespace SmartStore.Web.Portal.Controllers
             }
 
             return RedirectToAction("Login");
+        }
+
+        [HttpGet, Authorize]
+        public IActionResult Billing()
+        {
+            UserEntity ue = _usersRepo.GetUserByUsername(User.Identity.Name);
+            BillingInformationModel billingInformation = _mapper.Map<BillingInformationModel>(ue);
+
+            return View(billingInformation);
+        }
+
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Billing([FromForm]BillingInformationModel billingInfo)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    UserEntity ue = _usersRepo.GetUserByUsername(User.Identity.Name);
+
+                    ue.CreditCardCompany = billingInfo.CreditCardCompany;
+                    ue.CreditCardNumber = billingInfo.CreditCardNumber;
+
+                    await _usersRepo.SaveAllAsync();
+
+                    this.AddInformationMessage("Billing information saved!");
+                }
+                else
+                {
+                    return View(billingInfo);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+            }
+            return RedirectToAction("Index", "Home");
         }
     }
 }

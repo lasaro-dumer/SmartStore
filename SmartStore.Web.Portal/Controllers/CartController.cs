@@ -174,5 +174,39 @@ namespace SmartStore.Web.Portal.Controllers
             }
             return Ok();
         }
+
+        [HttpPost, AllowAnonymous]
+        public IActionResult Checkout([FromForm] CartModel cart)
+        {
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    UserEntity ue = _usersRepo.GetUserById(cart.UserId);
+
+                    if (!string.IsNullOrEmpty(ue.CreditCardNumber) && !string.IsNullOrEmpty(ue.CreditCardCompany))
+                    {
+                        this.AddInformationMessage("Reached the checkout");
+                    }
+                    else
+                    {
+                        this.AddInformationMessage("You need to fill your billing information before checkout");
+                        return RedirectToAction("Billing", "Account");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("Login", "Account", new { ReturnUrl = "/Cart" });
+                }
+            }
+            catch (Exception ex)
+            {
+                string errorGuid = Guid.NewGuid().ToString();
+                this.AddErrorMessage($"An error ocurred while processing your request. Provide the Id: '{errorGuid}' for traceability");
+                _logger.LogError(ex.Message, new { errorGuid, ex });
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }

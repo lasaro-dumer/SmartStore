@@ -8,6 +8,9 @@ namespace SmartStore.Web.Portal.Models
         public MappingProfile()
         {
             CreateMap<NewUserModel, UserEntity>();
+            CreateMap<BillingInformationModel, UserEntity>()
+                .ReverseMap()
+                    .ForMember(b => b.UserId, opt => opt.MapFrom(u => u.Id));
             CreateMap<CartItemModel, CartItem>()
                 .ForMember(c => c.Product, opt => opt.MapFrom(m => new Product() { Id = m.ProductId }))
                 .ReverseMap()

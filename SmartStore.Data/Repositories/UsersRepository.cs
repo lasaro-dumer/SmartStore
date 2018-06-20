@@ -12,14 +12,27 @@ namespace SmartStore.Data.Repositories
 
         public UserEntity GetUserByUsername(string username)
         {
-            var user = _context.Users.Where(u => u.UserName == username).FirstOrDefault();
+            var user = _context.Users
+                               .Where(u => u.UserName == username)
+                               .FirstOrDefault();
+
+            return user;
+        }
+
+        public UserEntity GetUserById(string userId)
+        {
+            var user = _context.Users
+                               .Where(u => u.Id == userId)
+                               .FirstOrDefault();
 
             return user;
         }
 
         public UserEntity GetUserByConfirmationToken(string token)
         {
-            var user = _context.Users.Where(u => u.EmailConfirmationToken == token).FirstOrDefault();
+            var user = _context.Users
+                               .Where(u => u.EmailConfirmationToken == token)
+                               .FirstOrDefault();
 
             return user;
         }
