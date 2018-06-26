@@ -43,5 +43,11 @@
                 </form>
             }
         </dd>
+        <dt>
+            @if (User.Identity.IsAuthenticated && User.IsInRole("Client"))
+            {
+                <a asp-action="Billing">Billing Information</a>
+            }
+        </dt>
     </dl>
 </div>
