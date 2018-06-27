@@ -94,7 +94,10 @@ namespace SmartStore.Web.Portal.Controllers
 
                     sessionCart.UserId = ue.Id;
                     sessionCart.UnauthenticatedUserId = null;
-                    _shoppingRepo.SaveCart(_mapper.Map<ShoppingCart>(sessionCart));
+
+                    ShoppingCart shoppingCartToSave = _mapper.Map<ShoppingCart>(sessionCart);
+                    _shoppingRepo.SaveCart(shoppingCartToSave);
+                    sessionCart = _mapper.Map<CartModel>(shoppingCartToSave);
 
                     HttpContext.Session.Set(Utility.SessionExtensions.SessionCart, sessionCart);
 

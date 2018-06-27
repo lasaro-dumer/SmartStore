@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using RazorLight;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using SmartStore.Data.Models;
 using SmartStore.Web.Portal.Models;
 
 namespace SmartStore.Web.Portal.Utility
@@ -102,6 +103,43 @@ namespace SmartStore.Web.Portal.Utility
             {
                 _logger.LogError(ex, ex.Message);
                 throw ex;
+            }
+            return false;
+        }
+
+        internal async Task<bool> SendPurchaseCreatedEmailAsync(string email, string firstName, string lastName, OrderModel order)
+        {
+            try
+            {
+                bool result = false;
+                int attempts = 0;
+                IUrlHelper urlHelper = (IUrlHelper)_httpContextAccessor.HttpContext.Items[BaseController.URLHELPER];
+                string toName = $"{firstName} {lastName}";
+                string subject = "Purchase Confirmation";
+
+                var model = new OrderConfirmationEmailModel
+                {
+                    Name = firstName,
+                    PurchaseDetailsUrl = urlHelper.Link("PurchaseDetails", new { id = order.Id }),
+                    Order = order
+                };
+
+                string htmlContent = await _engine.CompileRenderAsync("OrderConfirmationEmail.cshtml", model);
+                string plainTextContent = htmlContent;
+
+                while (!result && attempts < _maxEmailAttempts)
+                {
+                    result = await SendEmailAsync(email, toName, subject, plainTextContent, htmlContent);
+                    attempts++;
+                }
+
+                if (!result)
+                    throw new Exception("Maxium number of attempts reached");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
             }
             return false;
         }

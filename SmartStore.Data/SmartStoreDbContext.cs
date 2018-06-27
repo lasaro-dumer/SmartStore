@@ -19,6 +19,10 @@ namespace SmartStore.Data
         public DbSet<Tag> Tags { get; set; }
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<OrderItemStatus> OrderItemStatus { get; set; }
+        public DbSet<OrderStatus> OrderStatus { get; set; }
+        public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
+        public DbSet<PurchaseOrderItem> PurchaseOrderItems { get; set; }
 
         public SmartStoreDbContext(DbContextOptions options, IConfiguration configuration, IHostingEnvironment env)
          : base(options)

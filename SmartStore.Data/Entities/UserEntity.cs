@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
@@ -14,5 +15,6 @@ namespace SmartStore.Data.Entities
         public string CreditCardNumber { get; set; }
         [MaxLength(50)]
         public string CreditCardCompany { get; set; }
+        public IEnumerable<PurchaseOrder> Orders { get; set; }
     }
 }

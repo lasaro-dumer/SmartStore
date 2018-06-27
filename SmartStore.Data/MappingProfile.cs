@@ -29,6 +29,11 @@ namespace SmartStore.Data
                 .ForMember(i => i.Text, opt => opt.MapFrom(t => t.Name));
             //UserEntity to UserDetails
             CreateMap<UserEntity, UserDetails>();
+            //PurchaseOrder and PurchaseOrderItem to OrderModel and OrderItemModel
+            CreateMap<PurchaseOrderItem, OrderItemModel>()
+                .ForMember(o => o.Status, opt => opt.MapFrom(p => p.Status.Name));
+            CreateMap<PurchaseOrder, OrderModel>()
+                .ForMember(o => o.Status, opt => opt.MapFrom(p => p.Status.Name));
         }
     }
 }

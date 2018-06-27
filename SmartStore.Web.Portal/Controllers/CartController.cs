@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -13,25 +14,28 @@ using SmartStore.Web.Portal.Utility;
 
 namespace SmartStore.Web.Portal.Controllers
 {
-    public class CartController : Controller
+    public class CartController : BaseController
     {
         private ILogger<CartController> _logger;
         private IProductsRepository _productsRepo;
         private IUsersRepository _usersRepo;
         private IShoppingRepository _shoppingRepo;
         private IMapper _mapper;
+        private EmailSender _emailSender;
 
         public CartController(ILogger<CartController> logger,
                               IProductsRepository productsRepo,
                               IUsersRepository usersRepo,
                               IShoppingRepository shoppingRepo,
-                              IMapper mapper)
+                              IMapper mapper,
+                              EmailSender emailSender)
         {
             _logger = logger;
             _productsRepo = productsRepo;
             _usersRepo = usersRepo;
             _shoppingRepo = shoppingRepo;
             _mapper = mapper;
+            _emailSender = emailSender;
         }
 
         private CartModel GetCartFromSession()
@@ -176,7 +180,7 @@ namespace SmartStore.Web.Portal.Controllers
         }
 
         [HttpPost, AllowAnonymous]
-        public IActionResult Checkout([FromForm] CartModel cart)
+        public async Task<IActionResult> Checkout([FromForm] CartModel cart)
         {
             try
             {
@@ -186,7 +190,33 @@ namespace SmartStore.Web.Portal.Controllers
 
                     if (!string.IsNullOrEmpty(ue.CreditCardNumber) && !string.IsNullOrEmpty(ue.CreditCardCompany))
                     {
-                        this.AddInformationMessage("Reached the checkout");
+                        PurchaseOrder purchaseOrder = _shoppingRepo.CreateClientPurchase(_mapper.Map<ShoppingCart>(GetCartFromSession()));
+
+                        this.AddInformationMessage("Purchase order created");
+
+                        HttpContext.Session.Remove(Utility.SessionExtensions.SessionCart);
+
+                        if (ue.EmailConfirmed)
+                        {
+                            bool emailSent = await _emailSender.SendPurchaseCreatedEmailAsync(ue.Email,
+                                                                                              ue.FirstName,
+                                                                                              ue.LastName,
+                                                                                              _mapper.Map<OrderModel>(purchaseOrder));
+                            if (emailSent)
+                            {
+                                this.AddInformationMessage($"Email confirming purchase order sent to '{ue.Email}'");
+                            }
+                            else
+                            {
+                                this.AddErrorMessage($"Failed to send email confirming purchase order to '{ue.Email}'");
+                            }
+                        }
+                        else
+                        {
+                            this.AddWarningMessage($"Your email '{ue.Email}' isn't confirmed, so no email will be sent about the purchase order.");
+                        }
+
+                        return RedirectToAction("Details", "Purchase", new { id = purchaseOrder.Id });
                     }
                     else
                     {
